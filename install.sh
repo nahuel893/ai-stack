@@ -414,16 +414,8 @@ interactive_menu() {
 # --- Installers ---
 install_claude() {
     log_step "Installing Claude Code..."
-    # Try the official native installer script
-    if ! run_with_spinner "Downloading and executing Claude Code native installer" bash -c "curl -fsSL https://claude.ai/install.sh | bash"; then
-        log_warning "Native installer failed. Attempting global NPM installation fallback..."
-        if command -v npm &>/dev/null; then
-            run_with_spinner "Installing Claude Code via global NPM" npm install -g @anthropic-ai/claude-code
-        else
-            log_error "npm is not installed. Cannot run fallback installation."
-            return 1
-        fi
-    fi
+    # The official script runs curl -fsSL https://claude.ai/install.sh | bash
+    run_with_spinner "Downloading and executing Claude Code installer" bash -c "curl -fsSL https://claude.ai/install.sh | bash"
 }
 
 install_agy() {
