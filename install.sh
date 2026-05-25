@@ -23,6 +23,7 @@ CLR_ACCENT="${CLR_ESC}38;5;39m"     # Bright Blue
 CLR_SUCCESS="${CLR_ESC}38;5;82m"    # Vibrant Green
 CLR_WARNING="${CLR_ESC}38;5;214m"   # Amber/Orange
 CLR_ERROR="${CLR_ESC}38;5;196m"     # Red
+CLR_RED="${CLR_ESC}38;5;196m"       # Red (Alias)
 CLR_INFO="${CLR_ESC}38;5;51m"       # Cyan
 CLR_MUTED="${CLR_ESC}38;5;244m"     # Gray
 
@@ -413,8 +414,16 @@ interactive_menu() {
 # --- Installers ---
 install_claude() {
     log_step "Installing Claude Code..."
-    # The official script runs curl -fsSL https://claude.ai/install.sh | bash
-    run_with_spinner "Downloading and executing Claude Code installer" bash -c "curl -fsSL https://claude.ai/install.sh | bash"
+    # Try the official native installer script
+    if ! run_with_spinner "Downloading and executing Claude Code native installer" bash -c "curl -fsSL https://claude.ai/install.sh | bash"; then
+        log_warning "Native installer failed. Attempting global NPM installation fallback..."
+        if command -v npm &>/dev/null; then
+            run_with_spinner "Installing Claude Code via global NPM" npm install -g @anthropic-ai/claude-code
+        else
+            log_error "npm is not installed. Cannot run fallback installation."
+            return 1
+        fi
+    fi
 }
 
 install_agy() {
