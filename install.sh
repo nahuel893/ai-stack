@@ -550,49 +550,166 @@ main() {
         log_warning "DRY RUN MODE ENABLED. No software will be actually installed."
     fi
 
-    # Run installers
-    [ "$CHOSEN_CLAUDE" = true ] && install_claude
-    [ "$CHOSEN_AGY" = true ] && install_agy
-    [ "$CHOSEN_OPENCODE" = true ] && install_opencode
-    [ "$CHOSEN_GENTLE_AI" = true ] && install_gentle_ai
-    [ "$CHOSEN_QWEN" = true ] && install_qwen
-    [ "$CHOSEN_PI" = true ] && install_pi
-    [ "$CHOSEN_AIDER" = true ] && install_aider
-    [ "$CHOSEN_INTERPRETER" = true ] && install_interpreter
+    local failed_installs=()
+    local success_installs=()
 
-    # Run post-install configurations if applicable
-    [ "$CHOSEN_GENTLE_AI" = true ] && configure_gentle_ai
+    # Run installers
+    if [ "$CHOSEN_CLAUDE" = true ]; then
+        if install_claude; then
+            success_installs+=("Claude Code")
+        else
+            failed_installs+=("Claude Code")
+        fi
+    fi
+
+    if [ "$CHOSEN_AGY" = true ]; then
+        if install_agy; then
+            success_installs+=("Antigravity CLI (agy)")
+        else
+            failed_installs+=("Antigravity CLI (agy)")
+        fi
+    fi
+
+    if [ "$CHOSEN_OPENCODE" = true ]; then
+        if install_opencode; then
+            success_installs+=("OpenCode")
+        else
+            failed_installs+=("OpenCode")
+        fi
+    fi
+
+    if [ "$CHOSEN_GENTLE_AI" = true ]; then
+        if install_gentle_ai; then
+            success_installs+=("Gentle-AI")
+        else
+            failed_installs+=("Gentle-AI")
+        fi
+    fi
+
+    if [ "$CHOSEN_QWEN" = true ]; then
+        if install_qwen; then
+            success_installs+=("Qwen Code")
+        else
+            failed_installs+=("Qwen Code")
+        fi
+    fi
+
+    if [ "$CHOSEN_PI" = true ]; then
+        if install_pi; then
+            success_installs+=("Pi Coding Agent")
+        else
+            failed_installs+=("Pi Coding Agent")
+        fi
+    fi
+
+    if [ "$CHOSEN_AIDER" = true ]; then
+        if install_aider; then
+            success_installs+=("Aider")
+        else
+            failed_installs+=("Aider")
+        fi
+    fi
+
+    if [ "$CHOSEN_INTERPRETER" = true ]; then
+        if install_interpreter; then
+            success_installs+=("Open Interpreter")
+        else
+            failed_installs+=("Open Interpreter")
+        fi
+    fi
+
+    # Run post-install configurations if applicable (only if Gentle-AI was successfully installed)
+    local gentle_success=false
+    for item in "${success_installs[@]}"; do
+        if [ "$item" = "Gentle-AI" ]; then
+            gentle_success=true
+            break
+        fi
+    done
+
+    if [ "$CHOSEN_GENTLE_AI" = true ] && [ "$gentle_success" = true ]; then
+        configure_gentle_ai
+    fi
 
     # --- Print Post-Installation Report ---
     echo -e "\n${CLR_BOLD}${CLR_SUCCESS}┌────────────────────────────────────────────────────────┐${CLR_RESET}"
     echo -e "${CLR_BOLD}${CLR_SUCCESS}│             🚀  INSTALLATION COMPLETE!  🚀            │${CLR_RESET}"
     echo -e "${CLR_BOLD}${CLR_SUCCESS}└────────────────────────────────────────────────────────┘${CLR_RESET}\n"
     
-    log_success "Congratulations! Your selected AI tools/agents are ready to be used or initialized."
+    if [ ${#failed_installs[@]} -eq 0 ]; then
+        log_success "Congratulations! All selected AI tools/agents were installed successfully."
+    else
+        if [ ${#success_installs[@]} -gt 0 ]; then
+            log_success "The following tools were installed successfully:"
+            for tool in "${success_installs[@]}"; do
+                log_bullet "${CLR_SUCCESS}$tool${CLR_RESET}"
+            done
+        fi
+        echo ""
+        log_warning "Some installations failed. The following tools could not be installed:"
+        for tool in "${failed_installs[@]}"; do
+            log_bullet "${CLR_ERROR}$tool${CLR_RESET}"
+        done
+        log_info "Please check the terminal output above to troubleshoot the failures."
+    fi
+
     echo -e "\n${CLR_BOLD}Quick Start & Authentication Instructions:${CLR_RESET}"
 
-    if [ "$CHOSEN_CLAUDE" = true ]; then
+    # Only show quick start for successfully installed tools!
+    local show_claude_instructions=false
+    local show_agy_instructions=false
+    local show_opencode_instructions=false
+    local show_gentle_instructions=false
+    local show_qwen_instructions=false
+    local show_pi_instructions=false
+    local show_aider_instructions=false
+    local show_interpreter_instructions=false
+
+    for item in "${success_installs[@]}"; do
+        [ "$item" = "Claude Code" ] && show_claude_instructions=true
+        [ "$item" = "Antigravity CLI (agy)" ] && show_agy_instructions=true
+        [ "$item" = "OpenCode" ] && show_opencode_instructions=true
+        [ "$item" = "Gentle-AI" ] && show_gentle_instructions=true
+        [ "$item" = "Qwen Code" ] && show_qwen_instructions=true
+        [ "$item" = "Pi Coding Agent" ] && show_pi_instructions=true
+        [ "$item" = "Aider" ] && show_aider_instructions=true
+        [ "$item" = "Open Interpreter" ] && show_interpreter_instructions=true
+    done
+
+    # In dry-run mode, simulate all instructions
+    if [ "$DRY_RUN" = true ]; then
+        show_claude_instructions=$CHOSEN_CLAUDE
+        show_agy_instructions=$CHOSEN_AGY
+        show_opencode_instructions=$CHOSEN_OPENCODE
+        show_gentle_instructions=$CHOSEN_GENTLE_AI
+        show_qwen_instructions=$CHOSEN_QWEN
+        show_pi_instructions=$CHOSEN_PI
+        show_aider_instructions=$CHOSEN_AIDER
+        show_interpreter_instructions=$CHOSEN_INTERPRETER
+    fi
+
+    if [ "$show_claude_instructions" = true ]; then
         echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}1. Claude Code${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}claude${CLR_RESET}"
         log_bullet "Authenticate by running: ${CLR_CYAN}claude auth login${CLR_RESET}"
         log_bullet "Note: Requires a Claude Pro/Team account or Console API billing configured."
     fi
 
-    if [ "$CHOSEN_AGY" = true ]; then
+    if [ "$show_agy_instructions" = true ]; then
         echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}2. Antigravity CLI (agy)${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}agy${CLR_RESET}"
         log_bullet "Start and authenticate by running: ${CLR_CYAN}agy${CLR_RESET}"
         log_bullet "Note: Initiates Google Sign-in flow automatically on first execution."
     fi
 
-    if [ "$CHOSEN_OPENCODE" = true ]; then
+    if [ "$show_opencode_instructions" = true ]; then
         echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}3. OpenCode${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}opencode${CLR_RESET}"
         log_bullet "Authenticate by launching TUI or running: ${CLR_CYAN}opencode auth login${CLR_RESET}"
         log_bullet "Note: Supports custom model endpoints and multiple providers."
     fi
 
-    if [ "$CHOSEN_GENTLE_AI" = true ]; then
+    if [ "$show_gentle_instructions" = true ]; then
         echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}4. Gentle-AI${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}gentle-ai${CLR_RESET}"
         log_bullet "Run first-time setup and config: ${CLR_CYAN}gentle-ai install${CLR_RESET}"
@@ -600,33 +717,38 @@ main() {
         log_bullet "Sync configurations anytime: ${CLR_CYAN}gentle-ai sync${CLR_RESET}"
     fi
 
-    if [ "$CHOSEN_QWEN" = true ]; then
+    if [ "$show_qwen_instructions" = true ]; then
         echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}5. Qwen Code${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}qwen${CLR_RESET}"
         log_bullet "Launch Qwen CLI coding agent by running: ${CLR_CYAN}qwen${CLR_RESET}"
         log_bullet "Note: Follow on-screen instructions during the first run to complete setup."
     fi
 
-    if [ "$CHOSEN_PI" = true ]; then
+    if [ "$show_pi_instructions" = true ]; then
         echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}6. Pi Coding Agent${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}pi${CLR_RESET}"
         log_bullet "Launch Pi CLI coding agent by running: ${CLR_CYAN}pi${CLR_RESET}"
         log_bullet "Note: Visit https://pi.dev for documentation and setup instructions."
     fi
 
-    if [ "$CHOSEN_AIDER" = true ]; then
+    if [ "$show_aider_instructions" = true ]; then
         echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}7. Aider${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}aider${CLR_RESET}"
         log_bullet "Start inside any git repo by configuring your API key (e.g. export ANTHROPIC_API_KEY=...) and running: ${CLR_CYAN}aider${CLR_RESET}"
     fi
 
-    if [ "$CHOSEN_INTERPRETER" = true ]; then
+    if [ "$show_interpreter_instructions" = true ]; then
         echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}8. Open Interpreter${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}interpreter${CLR_RESET}"
         log_bullet "Start by running: ${CLR_CYAN}interpreter${CLR_RESET}"
     fi
 
     echo -e "\n${CLR_BOLD}${CLR_MUTED}Thank you for using the AI Agent CLI Installer! Keep exploring! 🚀${CLR_RESET}\n"
+
+    # Exit with code 1 if any installation failed
+    if [ ${#failed_installs[@]} -gt 0 ] && [ "$DRY_RUN" = false ]; then
+        exit 1
+    fi
 }
 
 main "$@"
