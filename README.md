@@ -14,6 +14,7 @@ An elegant, interactive, and robust terminal installation assistant designed to 
 
 - 🎨 **Visual Terminal Interface**: Beautiful ANSI-styled console layouts, bold headers, and micro-styled status markers.
 - ⠋ **Polished Loading Indicators**: Dynamic braille spinners displaying live progress during agent downloads and installations.
+- 🧠 **Automated Gentle-AI Setup**: Dynamically configures Gentle-AI memory harnesses, SDD presets, and persona templates for all selected agents post-installation.
 - ⚙️ **Automatic Dependency Checks**: Automatic diagnostics for prerequisites like `curl`, `git`, `npm`, and `pipx`.
 - 🕹️ **Interactive Selection Menu**: TUI selector where you can toggle agents/tools dynamically.
 - 🤖 **Non-interactive / Headless Mode**: Full support for flags (e.g. `--yes`, `--all`) to allow seamless automation, scripting, and CI/CD pipelines.
@@ -151,6 +152,6 @@ interpreter
 ---
 
 > [!TIP]
-> **Recommended Workflow:** First, install **Claude Code**, **OpenCode**, and **Gentle-AI**. Then run `gentle-ai install` to configure spec-driven templates and persistent memory extensions directly onto Claude Code and OpenCode!
+> **Automated Workflow:** The installer will automatically offer to configure Gentle-AI for you upon successful completion! In non-interactive mode (using `--yes` or `--all`), this step is entirely automated, injecting the `full-gentleman` SDD presets directly into your installed agents (like Claude Code and OpenCode) without requiring manual setup.
 
 Enjoy building with your new suite of AI coding agents! 🚀
