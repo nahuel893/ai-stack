@@ -432,8 +432,8 @@ install_opencode() {
 
 install_gentle_ai() {
     log_step "Installing Gentle-AI..."
-    # Canonical: curl -sSL https://raw.githubusercontent.com/Gentleman-Programming/gentle-ai/main/scripts/install.sh | bash
-    run_with_spinner "Downloading and executing Gentle-AI installer" bash -c "curl -sSL https://raw.githubusercontent.com/Gentleman-Programming/gentle-ai/main/scripts/install.sh | bash"
+    # Canonical: curl -fsSL https://raw.githubusercontent.com/Gentleman-Programming/gentle-ai/main/scripts/install.sh | bash
+    run_with_spinner "Downloading and executing Gentle-AI installer" bash -c "curl -fsSL https://raw.githubusercontent.com/Gentleman-Programming/gentle-ai/main/scripts/install.sh | bash"
 }
 
 install_qwen() {
