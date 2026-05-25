@@ -4,7 +4,7 @@
 #                  🤖  AI AGENT CLI INSTALLER  🤖
 # ==============================================================================
 # A beautiful, interactive, and robust script to install leading AI CLI agents.
-# Supporting: Claude Code, Antigravity CLI (agy), OpenCode, Gentle-AI, Qwen Code, and others.
+# Supporting: Claude Code, Antigravity CLI (agy), OpenCode, Gentle-AI, Qwen Code, Pi Coding Agent (pi), and others.
 # ==============================================================================
 
 set -euo pipefail
@@ -45,6 +45,7 @@ CHOSEN_AGY=true
 CHOSEN_OPENCODE=true
 CHOSEN_GENTLE_AI=true
 CHOSEN_QWEN=true
+CHOSEN_PI=true
 CHOSEN_AIDER=false
 CHOSEN_INTERPRETER=false
 
@@ -137,13 +138,14 @@ show_help() {
     echo -e "${CLR_BOLD}AI Agent CLI Installer${CLR_RESET}"
     echo -e "Usage: ./install.sh [options]\n"
     echo -e "Options:"
-    echo -e "  -y, --yes          Non-interactive mode, installs core agents (Claude, agy, OpenCode, Gentle-AI, Qwen Code)"
+    echo -e "  -y, --yes          Non-interactive mode, installs core agents (Claude, agy, OpenCode, Gentle-AI, Qwen Code, Pi)"
     echo -e "  -a, --all          Non-interactive mode, installs all available agents/tools"
     echo -e "  --claude           Select Claude Code for installation"
     echo -e "  --agy              Select Antigravity CLI (agy) for installation"
     echo -e "  --opencode         Select OpenCode for installation"
     echo -e "  --gentle-ai        Select Gentle-AI for installation"
     echo -e "  --qwen             Select Qwen Code for installation"
+    echo -e "  --pi               Select Pi Coding Agent for installation"
     echo -e "  --aider            Select Aider for installation"
     echo -e "  --interpreter      Select Open Interpreter for installation"
     echo -e "  --dry-run          Run script in dry-run mode, printing actions without executing them"
@@ -158,7 +160,7 @@ parse_args() {
         # Check if only dry-run is specified
         local has_selection_flag=false
         for arg in "$@"; do
-            if [[ "$arg" =~ ^--(claude|agy|opencode|gentle-ai|qwen|aider|interpreter)$ ]] || [ "$arg" = "-a" ] || [ "$arg" = "--all" ] || [ "$arg" = "-y" ] || [ "$arg" = "--yes" ]; then
+            if [[ "$arg" =~ ^--(claude|agy|opencode|gentle-ai|qwen|pi|aider|interpreter)$ ]] || [ "$arg" = "-a" ] || [ "$arg" = "--all" ] || [ "$arg" = "-y" ] || [ "$arg" = "--yes" ]; then
                 has_selection_flag=true
                 break
             fi
@@ -170,6 +172,7 @@ parse_args() {
             CHOSEN_OPENCODE=false
             CHOSEN_GENTLE_AI=false
             CHOSEN_QWEN=false
+            CHOSEN_PI=false
             CHOSEN_AIDER=false
             CHOSEN_INTERPRETER=false
         fi
@@ -184,6 +187,7 @@ parse_args() {
                 CHOSEN_OPENCODE=true
                 CHOSEN_GENTLE_AI=true
                 CHOSEN_QWEN=true
+                CHOSEN_PI=true
                 shift
                 ;;
             -a|--all)
@@ -194,6 +198,7 @@ parse_args() {
                 CHOSEN_OPENCODE=true
                 CHOSEN_GENTLE_AI=true
                 CHOSEN_QWEN=true
+                CHOSEN_PI=true
                 CHOSEN_AIDER=true
                 CHOSEN_INTERPRETER=true
                 shift
@@ -221,6 +226,11 @@ parse_args() {
             --qwen)
                 NON_INTERACTIVE=true
                 CHOSEN_QWEN=true
+                shift
+                ;;
+            --pi)
+                NON_INTERACTIVE=true
+                CHOSEN_PI=true
                 shift
                 ;;
             --aider)
@@ -312,6 +322,7 @@ interactive_menu() {
         local check_opencode="[ ]"
         local check_gentle="[ ]"
         local check_qwen="[ ]"
+        local check_pi="[ ]"
         local check_aider="[ ]"
         local check_interpreter="[ ]"
         
@@ -320,6 +331,7 @@ interactive_menu() {
         [ "$CHOSEN_OPENCODE" = true ] && check_opencode="[${CLR_SUCCESS}✔${CLR_RESET}]"
         [ "$CHOSEN_GENTLE_AI" = true ] && check_gentle="[${CLR_SUCCESS}✔${CLR_RESET}]"
         [ "$CHOSEN_QWEN" = true ] && check_qwen="[${CLR_SUCCESS}✔${CLR_RESET}]"
+        [ "$CHOSEN_PI" = true ] && check_pi="[${CLR_SUCCESS}✔${CLR_RESET}]"
         [ "$CHOSEN_AIDER" = true ] && check_aider="[${CLR_SUCCESS}✔${CLR_RESET}]"
         [ "$CHOSEN_INTERPRETER" = true ] && check_interpreter="[${CLR_SUCCESS}✔${CLR_RESET}]"
         
@@ -328,17 +340,18 @@ interactive_menu() {
         echo -e "  ${CLR_BOLD}3)${CLR_RESET} $check_opencode OpenCode         ${CLR_MUTED}(Open-source provider-agnostic agent)${CLR_RESET}"
         echo -e "  ${CLR_BOLD}4)${CLR_RESET} $check_gentle Gentle-AI        ${CLR_MUTED}(AI harness, SDD configurator & memory booster)${CLR_RESET}"
         echo -e "  ${CLR_BOLD}5)${CLR_RESET} $check_qwen Qwen Code         ${CLR_MUTED}(Qwen's official CLI coding agent)${CLR_RESET}"
-        echo -e "  ${CLR_BOLD}6)${CLR_RESET} $check_aider Aider            ${CLR_MUTED}(Popular coding pair programmer - requires pipx)${CLR_RESET}"
-        echo -e "  ${CLR_BOLD}7)${CLR_RESET} $check_interpreter Open Interpreter ${CLR_MUTED}(Local code runner - requires pipx)${CLR_RESET}"
+        echo -e "  ${CLR_BOLD}6)${CLR_RESET} $check_pi Pi Coding Agent   ${CLR_MUTED}(Minimalist open-source coding agent)${CLR_RESET}"
+        echo -e "  ${CLR_BOLD}7)${CLR_RESET} $check_aider Aider            ${CLR_MUTED}(Popular coding pair programmer - requires pipx)${CLR_RESET}"
+        echo -e "  ${CLR_BOLD}8)${CLR_RESET} $check_interpreter Open Interpreter ${CLR_MUTED}(Local code runner - requires pipx)${CLR_RESET}"
         echo -e ""
-        echo -e "  ${CLR_BOLD}i)${CLR_RESET} Toggle All Default  ${CLR_MUTED}(Claude, agy, OpenCode, Gentle-AI, Qwen Code)${CLR_RESET}"
+        echo -e "  ${CLR_BOLD}i)${CLR_RESET} Toggle All Default  ${CLR_MUTED}(Claude, agy, OpenCode, Gentle-AI, Qwen Code, Pi)${CLR_RESET}"
         echo -e "  ${CLR_BOLD}a)${CLR_RESET} Toggle All Tools"
         echo -e "  ${CLR_BOLD}d)${CLR_RESET} Run Dependency Check"
         echo -e ""
         echo -e "  ${CLR_BOLD}g)${CLR_RESET} ${CLR_BOLD}${CLR_SUCCESS}▶ PROCEED WITH INSTALLATION${CLR_RESET}"
         echo -e "  ${CLR_BOLD}q)${CLR_RESET} ${CLR_ERROR}Exit${CLR_RESET}\n"
         
-        read -p "➜ Enter option (1-7, i, a, d, g, q): " choice
+        read -p "➜ Enter option (1-8, i, a, d, g, q): " choice
         
         case "$choice" in
             1) CHOSEN_CLAUDE=$([ "$CHOSEN_CLAUDE" = true ] && echo false || echo true) ;;
@@ -346,20 +359,21 @@ interactive_menu() {
             3) CHOSEN_OPENCODE=$([ "$CHOSEN_OPENCODE" = true ] && echo false || echo true) ;;
             4) CHOSEN_GENTLE_AI=$([ "$CHOSEN_GENTLE_AI" = true ] && echo false || echo true) ;;
             5) CHOSEN_QWEN=$([ "$CHOSEN_QWEN" = true ] && echo false || echo true) ;;
-            6) CHOSEN_AIDER=$([ "$CHOSEN_AIDER" = true ] && echo false || echo true) ;;
-            7) CHOSEN_INTERPRETER=$([ "$CHOSEN_INTERPRETER" = true ] && echo false || echo true) ;;
+            6) CHOSEN_PI=$([ "$CHOSEN_PI" = true ] && echo false || echo true) ;;
+            7) CHOSEN_AIDER=$([ "$CHOSEN_AIDER" = true ] && echo false || echo true) ;;
+            8) CHOSEN_INTERPRETER=$([ "$CHOSEN_INTERPRETER" = true ] && echo false || echo true) ;;
             i)
-                if [ "$CHOSEN_CLAUDE" = true ] && [ "$CHOSEN_AGY" = true ] && [ "$CHOSEN_OPENCODE" = true ] && [ "$CHOSEN_GENTLE_AI" = true ] && [ "$CHOSEN_QWEN" = true ]; then
-                    CHOSEN_CLAUDE=false; CHOSEN_AGY=false; CHOSEN_OPENCODE=false; CHOSEN_GENTLE_AI=false; CHOSEN_QWEN=false
+                if [ "$CHOSEN_CLAUDE" = true ] && [ "$CHOSEN_AGY" = true ] && [ "$CHOSEN_OPENCODE" = true ] && [ "$CHOSEN_GENTLE_AI" = true ] && [ "$CHOSEN_QWEN" = true ] && [ "$CHOSEN_PI" = true ]; then
+                    CHOSEN_CLAUDE=false; CHOSEN_AGY=false; CHOSEN_OPENCODE=false; CHOSEN_GENTLE_AI=false; CHOSEN_QWEN=false; CHOSEN_PI=false
                 else
-                    CHOSEN_CLAUDE=true; CHOSEN_AGY=true; CHOSEN_OPENCODE=true; CHOSEN_GENTLE_AI=true; CHOSEN_QWEN=true
+                    CHOSEN_CLAUDE=true; CHOSEN_AGY=true; CHOSEN_OPENCODE=true; CHOSEN_GENTLE_AI=true; CHOSEN_QWEN=true; CHOSEN_PI=true
                 fi
                 ;;
             a)
-                if [ "$CHOSEN_CLAUDE" = true ] && [ "$CHOSEN_AGY" = true ] && [ "$CHOSEN_OPENCODE" = true ] && [ "$CHOSEN_GENTLE_AI" = true ] && [ "$CHOSEN_QWEN" = true ] && [ "$CHOSEN_AIDER" = true ] && [ "$CHOSEN_INTERPRETER" = true ]; then
-                    CHOSEN_CLAUDE=false; CHOSEN_AGY=false; CHOSEN_OPENCODE=false; CHOSEN_GENTLE_AI=false; CHOSEN_QWEN=false; CHOSEN_AIDER=false; CHOSEN_INTERPRETER=false
+                if [ "$CHOSEN_CLAUDE" = true ] && [ "$CHOSEN_AGY" = true ] && [ "$CHOSEN_OPENCODE" = true ] && [ "$CHOSEN_GENTLE_AI" = true ] && [ "$CHOSEN_QWEN" = true ] && [ "$CHOSEN_PI" = true ] && [ "$CHOSEN_AIDER" = true ] && [ "$CHOSEN_INTERPRETER" = true ]; then
+                    CHOSEN_CLAUDE=false; CHOSEN_AGY=false; CHOSEN_OPENCODE=false; CHOSEN_GENTLE_AI=false; CHOSEN_QWEN=false; CHOSEN_PI=false; CHOSEN_AIDER=false; CHOSEN_INTERPRETER=false
                 else
-                    CHOSEN_CLAUDE=true; CHOSEN_AGY=true; CHOSEN_OPENCODE=true; CHOSEN_GENTLE_AI=true; CHOSEN_QWEN=true; CHOSEN_AIDER=true; CHOSEN_INTERPRETER=true
+                    CHOSEN_CLAUDE=true; CHOSEN_AGY=true; CHOSEN_OPENCODE=true; CHOSEN_GENTLE_AI=true; CHOSEN_QWEN=true; CHOSEN_PI=true; CHOSEN_AIDER=true; CHOSEN_INTERPRETER=true
                 fi
                 ;;
             d)
@@ -371,7 +385,7 @@ interactive_menu() {
                 ;;
             g)
                 # Verify we selected at least one
-                if [ "$CHOSEN_CLAUDE" = false ] && [ "$CHOSEN_AGY" = false ] && [ "$CHOSEN_OPENCODE" = false ] && [ "$CHOSEN_GENTLE_AI" = false ] && [ "$CHOSEN_QWEN" = false ] && [ "$CHOSEN_AIDER" = false ] && [ "$CHOSEN_INTERPRETER" = false ]; then
+                if [ "$CHOSEN_CLAUDE" = false ] && [ "$CHOSEN_AGY" = false ] && [ "$CHOSEN_OPENCODE" = false ] && [ "$CHOSEN_GENTLE_AI" = false ] && [ "$CHOSEN_QWEN" = false ] && [ "$CHOSEN_PI" = false ] && [ "$CHOSEN_AIDER" = false ] && [ "$CHOSEN_INTERPRETER" = false ]; then
                     log_warning "No tools selected. Please select at least one item to install."
                     sleep 2
                 else
@@ -427,6 +441,12 @@ install_qwen() {
     run_with_spinner "Downloading and executing Qwen Code installer" bash -c 'bash -c "$(curl -fsSL https://qwen-code-assets.oss-cn-hangzhou.aliyuncs.com/installation/install-qwen.sh)" -s --source qwenchat'
 }
 
+install_pi() {
+    log_step "Installing Pi Coding Agent..."
+    # Canonical: curl -fsSL https://pi.dev/install.sh | sh
+    run_with_spinner "Downloading and executing Pi Coding Agent installer" bash -c 'curl -fsSL https://pi.dev/install.sh | sh'
+}
+
 install_aider() {
     log_step "Installing Aider..."
     if command -v pipx &>/dev/null; then
@@ -467,6 +487,7 @@ main() {
     [ "$CHOSEN_OPENCODE" = true ] && log_bullet "OpenCode"
     [ "$CHOSEN_GENTLE_AI" = true ] && log_bullet "Gentle-AI"
     [ "$CHOSEN_QWEN" = true ] && log_bullet "Qwen Code"
+    [ "$CHOSEN_PI" = true ] && log_bullet "Pi Coding Agent"
     [ "$CHOSEN_AIDER" = true ] && log_bullet "Aider Pair Programmer"
     [ "$CHOSEN_INTERPRETER" = true ] && log_bullet "Open Interpreter"
     echo ""
@@ -481,6 +502,7 @@ main() {
     [ "$CHOSEN_OPENCODE" = true ] && install_opencode
     [ "$CHOSEN_GENTLE_AI" = true ] && install_gentle_ai
     [ "$CHOSEN_QWEN" = true ] && install_qwen
+    [ "$CHOSEN_PI" = true ] && install_pi
     [ "$CHOSEN_AIDER" = true ] && install_aider
     [ "$CHOSEN_INTERPRETER" = true ] && install_interpreter
 
@@ -528,14 +550,21 @@ main() {
         log_bullet "Note: Follow on-screen instructions during the first run to complete setup."
     fi
 
+    if [ "$CHOSEN_PI" = true ]; then
+        echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}6. Pi Coding Agent${CLR_RESET}"
+        log_bullet "Command: ${CLR_BOLD}pi${CLR_RESET}"
+        log_bullet "Launch Pi CLI coding agent by running: ${CLR_CYAN}pi${CLR_RESET}"
+        log_bullet "Note: Visit https://pi.dev for documentation and setup instructions."
+    fi
+
     if [ "$CHOSEN_AIDER" = true ]; then
-        echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}6. Aider${CLR_RESET}"
+        echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}7. Aider${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}aider${CLR_RESET}"
         log_bullet "Start inside any git repo by configuring your API key (e.g. export ANTHROPIC_API_KEY=...) and running: ${CLR_CYAN}aider${CLR_RESET}"
     fi
 
     if [ "$CHOSEN_INTERPRETER" = true ]; then
-        echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}7. Open Interpreter${CLR_RESET}"
+        echo -e "\n ${CLR_BOLD}${CLR_PRIMARY}8. Open Interpreter${CLR_RESET}"
         log_bullet "Command: ${CLR_BOLD}interpreter${CLR_RESET}"
         log_bullet "Start by running: ${CLR_CYAN}interpreter${CLR_RESET}"
     fi

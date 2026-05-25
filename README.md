@@ -30,6 +30,7 @@ An elegant, interactive, and robust terminal installation assistant designed to 
 | **OpenCode** | `opencode` | Open-source, provider-agnostic TUI coding agent | `curl` native script |
 | **Gentle-AI** | `gentle-ai` | SDD orchestrator, agent memory harness & curated skills | GitHub script |
 | **Qwen Code** | `qwen` | Qwen's official CLI coding agent | Curl installation script |
+| **Pi Coding Agent** | `pi` | Minimalist open-source CLI coding agent | Curl installation script |
 | **Aider** | `aider` | High-fidelity terminal pair-programming coder | `pipx` / `pip3` |
 | **Open Interpreter**| `interpreter`| Conversational CLI for running local machine code | `pipx` / `pip3` |
 
@@ -60,7 +61,7 @@ Simply execute the installer script without arguments. It will launch a beautifu
 Within the interactive menu, you can toggle agents, verify your dependencies, and proceed with the installation of your selections.
 
 ### 2. Non-interactive Mode (Automated)
-To install the **default recommended agents** (Claude Code, agy, OpenCode, Gentle-AI, and Qwen Code) silently:
+To install the **default recommended agents** (Claude Code, agy, OpenCode, Gentle-AI, Qwen Code, and Pi) silently:
 
 ```bash
 ./install.sh --yes
@@ -127,14 +128,21 @@ qwen
 ```
 *Note: Follow the on-screen configuration prompts during the first startup.*
 
-### 6. Aider
+### 6. Pi Coding Agent
+Launch the Pi CLI agent:
+```bash
+pi
+```
+*Note: Run `pi` inside any project directory to initialize an agentic session.*
+
+### 7. Aider
 Export your API key and start coding:
 ```bash
 export ANTHROPIC_API_KEY="your-key-here"
 aider
 ```
 
-### 7. Open Interpreter
+### 8. Open Interpreter
 Run locally to execute code:
 ```bash
 interpreter
