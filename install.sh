@@ -469,6 +469,59 @@ install_interpreter() {
     fi
 }
 
+configure_gentle_ai() {
+    if [ "$DRY_RUN" = true ]; then
+        echo -e "  ${CLR_MUTED}[Dry-Run] Would automate Gentle-AI configuration${CLR_RESET}"
+        return 0
+    fi
+
+    # Clear Bash path cache so it can find newly installed binaries
+    hash -r
+
+    # Find the binary
+    local gentle_bin="gentle-ai"
+    if [ -f "$HOME/.local/bin/gentle-ai" ]; then
+        gentle_bin="$HOME/.local/bin/gentle-ai"
+    elif [ -f "/usr/local/bin/gentle-ai" ]; then
+        gentle_bin="/usr/local/bin/gentle-ai"
+    fi
+
+    # Determine which successfully selected agents we can configure
+    local agents=()
+    [ "$CHOSEN_CLAUDE" = true ] && agents+=("claude-code")
+    [ "$CHOSEN_OPENCODE" = true ] && agents+=("opencode")
+    
+    if [ ${#agents[@]} -eq 0 ]; then
+        return 0
+    fi
+
+    local agents_str
+    agents_str=$(IFS=,; echo "${agents[*]}")
+
+    log_step "Gentle-AI Post-Installation Configuration"
+    log_info "Gentle-AI supports silent automation for: ${agents_str}"
+
+    if [ "$NON_INTERACTIVE" = true ]; then
+        log_info "Automating Gentle-AI setup silently using the 'full-gentleman' preset..."
+        run_with_spinner "Configuring Gentle-AI for ${agents_str}" "$gentle_bin" install --agent "$agents_str" --preset full-gentleman
+    else
+        echo ""
+        local auto_cfg
+        read -p "➜ Would you like to automatically run Gentle-AI setup for [${agents_str}] now? (y/N): " auto_cfg
+        if [[ "$auto_cfg" =~ ^[Yy]$ ]]; then
+            echo ""
+            # Run the preset configuration which is clean and automated!
+            if "$gentle_bin" install --agent "$agents_str" --preset full-gentleman; then
+                log_success "Gentle-AI successfully configured for ${agents_str}."
+            else
+                log_warning "Gentle-AI configuration completed with some warnings."
+            fi
+        else
+            log_info "Skipping automatic Gentle-AI setup. You can run it manually later via: gentle-ai"
+        fi
+    fi
+}
+
 # --- Main Logic ---
 main() {
     parse_args "$@"
@@ -505,6 +558,9 @@ main() {
     [ "$CHOSEN_PI" = true ] && install_pi
     [ "$CHOSEN_AIDER" = true ] && install_aider
     [ "$CHOSEN_INTERPRETER" = true ] && install_interpreter
+
+    # Run post-install configurations if applicable
+    [ "$CHOSEN_GENTLE_AI" = true ] && configure_gentle_ai
 
     # --- Print Post-Installation Report ---
     echo -e "\n${CLR_BOLD}${CLR_SUCCESS}┌────────────────────────────────────────────────────────┐${CLR_RESET}"
