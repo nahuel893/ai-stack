@@ -450,13 +450,8 @@ install_pi() {
 
 install_aider() {
     log_step "Installing Aider..."
-    if command -v pipx &>/dev/null; then
-        run_with_spinner "Installing Aider pair programmer via pipx" pipx install aider-chat
-    else
-        local pip_cmd="pip3"
-        command -v pip &>/dev/null && pip_cmd="pip"
-        run_with_spinner "Installing Aider pair programmer via pip (user-level)" "$pip_cmd" install --user aider-chat
-    fi
+    # Canonical: curl -LsSf https://aider.chat/install.sh | sh
+    run_with_spinner "Downloading and executing Aider installer" bash -c "curl -LsSf https://aider.chat/install.sh | sh"
 }
 
 install_interpreter() {

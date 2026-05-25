@@ -32,7 +32,7 @@ An elegant, interactive, and robust terminal installation assistant designed to 
 | **Gentle-AI** | `gentle-ai` | SDD orchestrator, agent memory harness & curated skills | GitHub script |
 | **Qwen Code** | `qwen` | Qwen's official CLI coding agent | Curl installation script |
 | **Pi Coding Agent** | `pi` | Minimalist open-source CLI coding agent | Curl installation script |
-| **Aider** | `aider` | High-fidelity terminal pair-programming coder | `pipx` / `pip3` |
+| **Aider** | `aider` | High-fidelity terminal pair-programming coder | Curl installation script |
 | **Open Interpreter**| `interpreter`| Conversational CLI for running local machine code | `pipx` / `pip3` |
 
 ---
